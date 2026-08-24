@@ -151,8 +151,21 @@ Si dejas los puertos ocupados, el próximo que se siente ahí va a pelear con
 
 ## Sobre las versiones
 
-`gateway/package.json` fija las dependencias **exactas**, sin `^`. No es
-pedantería: con treinta forks del mismo repositorio, un `^11.0.1` que un mes
-después resuelve a otra versión menor convierte «en mi computador funciona» en un
-problema que no se puede ayudar a distancia. Si quieres actualizar algo, hazlo a
-propósito y en un commit que lo diga.
+`gateway/package.json` fija las dependencias **exactas**, sin `^`, y el
+`package-lock.json` está versionado. No es pedantería: con treinta forks del mismo
+repositorio, un `^11.0.1` que un mes después resuelve a otra versión menor
+convierte «en mi computador funciona» en un problema que no se puede ayudar a
+distancia. El `package.json` fija lo que pedimos; el lock fija además todo lo que
+esas dependencias arrastran, que es la mitad del árbol.
+
+Por eso, si quieres el mismo árbol exacto que se probó:
+
+```bash
+cd gateway
+npm ci        # instala **desde el lock**, sin recalcular nada
+```
+
+`npm install` también funciona y es lo que dice el resto de esta guía; la
+diferencia es que `npm ci` borra `node_modules` y no toca el lock, así que es el
+que conviene cuando algo «funcionaba ayer». Si quieres actualizar una dependencia,
+hazlo a propósito y en un commit que lo diga.
