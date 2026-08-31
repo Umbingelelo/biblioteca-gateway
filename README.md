@@ -5,7 +5,7 @@ El API Gateway de la biblioteca, en el estado en que queda al terminar **L1**.
 Esto es el punto de partida de los laboratorios que siguen. Si el PC de la sala se
 restauró, si dejaste tu carpeta en otro equipo o si nunca te quedó andando: haz un
 **fork** de este repositorio y sigue desde acá. No pierdes nada de L1 — L1 ya lo
-entregaste y esto no lo reemplaza; es la base sobre la que se construye L2.
+entregaste y esto no lo reemplaza; es la base sobre la que se construye L3.
 
 ```
 biblioteca-gateway/
@@ -30,6 +30,15 @@ biblioteca-gateway/
 independientes, y `gateway/` tiene su propio `package.json`. Mezclarlos en una
 carpeta es la causa nº1 de errores raros de Node, porque busca su configuración
 hacia arriba en el árbol y puede tomar la del vecino.
+
+## Su mitad gemela
+
+El frontend Angular vive en **[biblioteca-web](https://github.com/Umbingelelo/biblioteca-web)**, y
+es otro repositorio a propósito: frontend y backend se despliegan por separado, se
+versionan por separado y muchas veces los escriben equipos distintos.
+
+**Para L3 necesitas los dos forkeados.** Este responde en el 8080; ese consume el 8080
+desde el 4200, que es el origen que el `enableCors` de `main.ts` permite.
 
 ## Partir
 
@@ -122,8 +131,9 @@ Y hay tres cosas que **no** hace, cada una con su laboratorio:
 
 | Lo que falta | Dónde se arregla |
 |---|---|
-| El token no se verifica: `Bearer holaquetal` pasa igual que un JWT | **L2**, donde el token lo emite Entra de verdad, y el gateway empieza a comprobar `iss`, `aud` y `exp` |
-| La firma —la tercera parte del token— no se mira nunca | **L3**, con las claves públicas del emisor |
+| El token no se verifica: `Bearer holaquetal` pasa igual que un JWT | **L3**, donde el token lo emite Amazon Cognito de verdad, y el gateway empieza a comprobar `iss`, `token_use`, `client_id`, `exp` y los scopes |
+| La firma —la tercera parte del token— no se mira nunca | **L3 también**, contra el JWKS del emisor. Ojo con lo que no vas a encontrar en un access token de Cognito: no hay `aud`. Está explicado en el tramo 6.6 de L3 |
+| No hay autorización, solo autenticación | **L3**, con `scope` y `cognito:groups`: 401 es «no sé quién eres», 403 es «sé quién eres y no te alcanza» |
 | Los microservicios responden a quien los llame directo al 3001 | Con Docker y una red interna, donde el único que los alcanza es el gateway |
 
 Ese último pruébalo ahora, que es de un comando:
